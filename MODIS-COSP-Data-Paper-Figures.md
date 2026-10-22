@@ -32,6 +32,8 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 
 import cartopy.crs as ccrs
+
+from modis_cosp.outputs import open_scalars, open_variable
 ```
 
 # Graphical definitions
@@ -117,7 +119,7 @@ if saveFigs:
 # An example month  - Juy 2021
 
 ```{code-cell} ipython3
-month = xr.open_dataset(dataDir.joinpath("modis-cosp-scalars.nc"), engine="netcdf4").sel(date=sample_month)
+month = open_scalars(dataDir, sample_month, sample_month).isel(time=0)
 ```
 
 # Cloud mask and retrieval fractions
@@ -314,8 +316,7 @@ axes = fig.subplots(nrows=3, ncols=2, sharex=True, sharey=True)
 
 def get_joint_histo(v, s=""): 
     hname = f"Cloud_Optical_Thickness_{v}_vs_Cloud_Top_Pressure"
-    fname = dataDir.joinpath(f"modis-cosp-{hname}.nc")
-    gmh = global_mean(xr.open_dataset(fname).sel(date=sample_month))
+    gmh = global_mean(open_variable(hname, dataDir, sample_month, sample_month).isel(time=0))
     return(gmh[hname])
     
 #
@@ -327,8 +328,7 @@ vmax = np.max(get_joint_histo("Total"))
 for i, s in enumerate(["", "_PCL"]): # Top row/subset is cloudy, bottom row/subset is partly-cloudy (PCL)
     for r, v in enumerate(["Total", "Ice", "Liquid"]):
         hname = f"Cloud_Optical_Thickness{s}_{v}_vs_Cloud_Top_Pressure"
-        fname = dataDir.joinpath(f"modis-cosp-{hname}.nc")
-        gmh = global_mean(xr.open_dataset(fname).sel(date=sample_month))
+        gmh = global_mean(open_variable(hname, dataDir, sample_month, sample_month).isel(time=0))
         #    
         # imshow() seems to show the first array dimension from top to bottom and the second dimension 
         # from left to right, so we transpose the DataArray before plotting 
@@ -377,15 +377,13 @@ axes = fig.subplots(ncols=2, nrows=2, sharex=True)
 # 
 v = "Liquid";  s = ""
 hname = f"Cloud_Optical_Thickness_vs_Cloud_Particle_Size{s}_{v}"
-fname = dataDir.joinpath(f"modis-cosp-{hname}.nc")
-gmh = global_mean(xr.open_dataset(fname).sel(date=sample_month))
+gmh = global_mean(open_variable(hname, dataDir, sample_month, sample_month).isel(time=0))
 vmax = np.max(gmh[hname])
 
 for i, s in enumerate(["", "_PCL"]): # Top row/subset is cloudy, bottom row/subset is partly-cloudy (PCL)
     for r, v in enumerate(["Ice", "Liquid"]): 
         hname = f"Cloud_Optical_Thickness_vs_Cloud_Particle_Size{s}_{v}"
-        fname = dataDir.joinpath(f"modis-cosp-{hname}.nc")
-        gmh = global_mean(xr.open_dataset(fname).sel(date=sample_month))
+        gmh = global_mean(open_variable(hname, dataDir, sample_month, sample_month).isel(time=0))
         #    
         # imshow() seems to show the first array dimension from top to bottom and the second dimension 
         # from left to right, so we transpose the DataArray before plotting 
@@ -435,15 +433,13 @@ axes = fig.subplots(ncols=2, nrows=2)
 # 
 v = "Liquid"; s = "" 
 hname = f"Cloud_Water_Path_vs_Cloud_Particle_Size{s}_{v}"
-fname = dataDir.joinpath(f"modis-cosp-{hname}.nc")
-gmh = global_mean(xr.open_dataset(fname).sel(date=sample_month))
+gmh = global_mean(open_variable(hname, dataDir, sample_month, sample_month).isel(time=0))
 vmax = np.max(gmh[hname])
 
 for i, s in enumerate(["", "_PCL"]): # Top row/subset is cloudy, bottom row/subset is partly-cloudy (PCL)
     for r, v in enumerate(["Ice", "Liquid"]): 
         hname = f"Cloud_Water_Path_vs_Cloud_Particle_Size{s}_{v}"
-        fname = dataDir.joinpath(f"modis-cosp-{hname}.nc")
-        gmh = global_mean(xr.open_dataset(fname).sel(date=sample_month))
+        gmh = global_mean(open_variable(hname, dataDir, sample_month, sample_month).isel(time=0))
         #    
         # imshow() seems to show the first array dimension from top to bottom and the second dimension 
         # from left to right, so we transpose the DataArray before plotting 
