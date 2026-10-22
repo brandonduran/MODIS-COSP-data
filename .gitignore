@@ -1,0 +1,4 @@
+data-processed/
+modis-data-original/
+__pycache__/
+*.nc.tmp
