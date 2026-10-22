@@ -35,6 +35,19 @@ def write_netcdf(ds, path, vars):
     os.replace(tmp, path)
 
 
+def update_netcdf(ds, path, vars):
+    """Add the months in ``ds`` to the file at ``path``, replacing any months already there"""
+    path = Path(path)
+    if path.exists():
+        with xr.open_dataset(path, engine="netcdf4") as old:
+            old = old.load()
+        old = old.sel(time=~old.time.isin(ds.time.values))
+        if old.time.size > 0:
+            ds = xr.concat([old, ds], dim="time", data_vars="minimal", coords="minimal",
+                           compat="override", join="override").sortby("time")
+    write_netcdf(ds, path, vars)
+
+
 ###########################
 # Manifest - which years are done
 
@@ -57,10 +70,12 @@ def record_year(out_dir, year, months, complete, hnames):
     os.replace(tmp, f)
 
 
-def year_is_done(out_dir, year, hnames):
+def done_months(out_dir, year, hnames):
+    """Months (as "YYYY-MM") of ``year`` already processed, counting only if every output file exists"""
     entry = read_manifest(out_dir)["years"].get(str(year))
-    return (entry is not None and entry["complete"] and
-            all(p.exists() for p in output_paths(out_dir, year, hnames)))
+    if entry is None or not all(p.exists() for p in output_paths(out_dir, year, hnames)):
+        return []
+    return entry["months"]
 
 
 ###########################
