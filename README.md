@@ -67,6 +67,24 @@ python -m modis_cosp.merge --start 2021-07 --end 2026-08 --variables scalars Clo
 ```
 which writes e.g. `data-processed/merged/modis-cosp-scalars_200301-202012.nc` (use `--dest` to choose another directory).
 
+# Comparing with model output
+
+`modis_cosp.compare` compares a model's MODIS-simulator output with the post-processed data. It 
+regrids the model (lat-lon or spectral-element `ncol` grids) to the 1x1 degree MODIS grid and makes 
+two figures: maps of the model and MODIS time means and their difference, and global, Northern and 
+Southern Hemisphere mean time series of MODIS over the whole record, with the comparison period 
+shaded when it is not the full record. 
+```
+python -m modis_cosp.compare CLTMODIS --model "/path/to/case.cam.h2.*.nc" \
+    --obs-dir /glade/derecho/scratch/bduran/MODIS-cosp-data --fig-dir figures
+python -m modis_cosp.compare CLWMODIS --model "/path/to/case.cam.h2.*.nc" --start 2010 --end 2014
+```
+By default MODIS data from 2003 through 2025 and all model months are used; `--start`/`--end` choose 
+the MODIS period and `--model-start`/`--model-end` the model period. `python -m modis_cosp.compare --help` 
+lists the variables available for comparison. The model cloud fractions (`CLTMODIS`, `CLWMODIS`, 
+`CLIMODIS`) are compared with the MODIS retrieval fractions (`Cloud_Retrieval_Fraction_Total/Liquid/Ice`), 
+both expressed in percent. 
+
 Python code relies on the modules listed in `environment.yml`. These may be installed with 
 [conda](https://docs.conda.io/): 
 ```

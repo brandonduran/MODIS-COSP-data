@@ -8,6 +8,7 @@ dependencies:
   - pandas
   - xarray
   - netcdf4
+  - scipy
   - zarr
   - matplotlib
   - colorcet
